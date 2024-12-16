@@ -4,40 +4,46 @@ const FULL_HEART = '♥'
 
 // Your JavaScript code goes here!
 
-function submitData(name, email) {
-  const formData = {
-    name: name,
-    email: email
-  };
+function submitData(name, email)
+// Define the empty and full heart symbols
+const EMPTY_HEART = '♡';
+const FULL_HEART = '♥';
 
-  const configurationObject = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json"
-    },
-    body: JSON.stringify(formData)
-  };
+// Add an event listener for each heart
+document.addEventListener('DOMContentLoaded', () => {
+  const hearts = document.querySelectorAll('.like-glyph'); // Select all hearts
 
+  hearts.forEach((heart) => {
+    heart.addEventListener('click', () => {
+      // Check if the heart is empty or full
+      if (heart.textContent === EMPTY_HEART) {
+        // Simulate server call for empty heart
+        mimicServerCall()
+          .then(() => {
+            // Success: Change to full heart and add the activated class
+            heart.textContent = FULL_HEART;
+            heart.classList.add('activated-heart');
+          })
+          .catch((error) => {
+            // Failure: Show the error modal with the error message
+            const modal = document.getElementById('modal');
+            const modalMessage = document.getElementById('modal-message');
+            modalMessage.textContent = error; // Set error message
+            modal.classList.remove('hidden'); // Show modal
 
-  return fetch("http://localhost:3000/users", configurationObject)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+            // Hide modal after 3 seconds
+            setTimeout(() => {
+              modal.classList.add('hidden');
+            }, 3000);
+          });
+      } else {
+        // If heart is full, toggle it back to empty
+        heart.textContent = EMPTY_HEART;
+        heart.classList.remove('activated-heart');
       }
-      return response.json();
-    })
-    .then(data => {
-      const idElement = document.createElement("p");
-      idElement.textContent = `New ID: ${data.id}`;
-      document.body.appendChild(idElement);
-    })
-    .catch(error => {
-      const errorElement = document.createElement("p");
-      errorElement.textContent = `Error: ${error.message}`;
-      document.body.appendChild(errorElement);
     });
-}
+  });
+});
 
 
 
